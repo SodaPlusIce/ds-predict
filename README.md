@@ -1,24 +1,27 @@
 back:
-安装django，pymysql
-建议conda环境下运行
-/back路径下执行 `python manage.py runserver`
+- 建议conda环境下运行
+- 安装django，pymysql
+- /back路径下执行 `python manage.py runserver`启动项目
+- 算法结合需在back/predict/views.py中code
+- urls配置路由，back/back/urls.py配置总路由规则
 
 front:
-/front目录下执行npm install
-执行npm start启动项目
+- /front目录下执行npm install
+- 执行npm start启动项目
 
 db:
-docker pull mysql
-
-图表展示
+- docker里开一个mysql
+- db名叫ds-predict
+- 表自行设计
 
 业务逻辑：
-前端拿到上传的csv文件，解析成数组
-以json格式传到后端
-后端解析，然后在接口里跑模型
-前端显示等待中
-跑完模型把结果图返回给前
-前显示出来
+- 前端拿到上传的csv文件，解析成数组
+- 调用/predict接口，数据给到后端
+- 后端拿到数据，然后跑模型
+- 前端显示等待中
+- 跑完模型把结果图通过base64编码返回给前
+- 前端显示出来
 
-前端一个容器，通过status变量判断是现实加载组件还是图表组件
-status 0未上传文件1训练中2图表和下载按钮
+tips：
+- 前端是clone的一个模版改的
+- 核心文件在front/front-react/src/pages/home/Workspace.tsx中
