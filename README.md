@@ -25,3 +25,8 @@ db:
 tips：
 - 前端是clone的一个模版改的
 - 核心文件在front/front-react/src/pages/home/Workspace.tsx中
+
+todo:
+- [ ] 修改各种图标
+- [ ] 修改登录时的文字显示
+- [ ] xx
