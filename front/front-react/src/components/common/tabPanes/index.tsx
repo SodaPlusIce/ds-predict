@@ -264,8 +264,39 @@ const TabPanes: FC<Props> = (props) => {
 
   return (
     <div>
+      <Tabs
+        // destroyInactiveTabPane
+        activeKey={activeKey}
+        className={style.tabs}
+        defaultActiveKey={defaultActiveKey}
+        hideAdd
+        onChange={onChange}
+        onEdit={onEdit}
+        onTabClick={onTabClick}
+        type="editable-card"
+        size="small"
+      >
         {panes.map((pane: CommonObjectType) => (
-          <div>
+          <TabPane
+            closable={pane.closable}
+            key={pane.key}
+            tab={
+              <Dropdown
+                overlay={menu}
+                placement="bottomLeft"
+                trigger={['contextMenu']}
+              >
+                <span onContextMenu={(e) => preventDefault(e, pane)}>
+                  {isReload &&
+                    pane.path === fullPath &&
+                    pane.path !== '/403' && (
+                      <SyncOutlined title="刷新" spin={isReload} />
+                    )}
+                  {pane.title}
+                </span>
+              </Dropdown>
+            }
+          >
             {reloadPath !== pane.path ? (
               <pane.content path={pane.path} />
             ) : (
@@ -273,8 +304,9 @@ const TabPanes: FC<Props> = (props) => {
                 <Alert message="刷新中..." type="info" />
               </div>
             )}
-          </div>
+          </TabPane>
         ))}
+      </Tabs>
     </div>
   )
 }

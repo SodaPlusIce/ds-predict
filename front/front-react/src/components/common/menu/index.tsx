@@ -118,7 +118,7 @@ const MenuView: FC<MenuProps> = ({ menuMode }) => {
     return (
       <Header className="flex header">
         <LogLink />
-        {/* <div className={styles.autoWidthMenu}>
+        <div className={styles.autoWidthMenu}>
           <Menu
             mode="horizontal"
             onClick={handleClick}
@@ -127,7 +127,7 @@ const MenuView: FC<MenuProps> = ({ menuMode }) => {
           >
             {renderMenuMap(menus)}
           </Menu>
-        </div> */}
+        </div>
       </Header>
     )
   return (
@@ -140,7 +140,7 @@ const MenuView: FC<MenuProps> = ({ menuMode }) => {
         left: 0,
         userSelect: 'none'
       }}
-      width={180}
+      width={220}
     >
       <LogLink />
       <Menu

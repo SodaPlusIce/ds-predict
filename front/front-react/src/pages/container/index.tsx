@@ -16,7 +16,7 @@ import {
 import styles from './container.module.less'
 
 const noNewTab = ['/login'] // 不需要新建 tab的页面
-const noCheckAuth = ['/', '/403', '/test-api', '/workspace'] // 不需要检查权限的页面
+const noCheckAuth = ['/', '/403', '/test-api', '/predict'] // 不需要检查权限的页面
 // 检查权限
 const checkAuth = (newPathname: string): boolean => {
   // 不需要检查权限的
@@ -129,7 +129,6 @@ const Home: FC = () => {
         })}
       >
         <Header />
-        {/* tab栏 */}
         <Layout.Content>
           <TabPanes
             defaultActiveKey="home"

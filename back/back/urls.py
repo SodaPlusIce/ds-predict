@@ -16,6 +16,6 @@ Including another URLconf
 from django.urls import path,include
 
 urlpatterns = [
-    path('', include('login.urls')),
-    path('predict/', include('predict.urls')),
+    # path('', include('login.urls')),
+    path('', include('predict.urls')),
 ]

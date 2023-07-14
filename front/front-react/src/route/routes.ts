@@ -30,12 +30,96 @@ import { TestApiLoad } from './TempTestRouteComponent'
 const preDefinedRoutes: MenuRoute[] = [
   {
     path: '/',
-    name: '首页',
+    name: '模型训练',
     exact: true,
     key: 'home',
     icon: HomeOutlined,
     component: Home
   },
+  {
+    path: '/predict',
+    name: '样本预测',
+    exact: true,
+    key: 'predict',
+    component: Workspace,
+    icon: DashboardOutlined
+    // icon: () =>
+    //   React.createElement(Icon, { icon: 'arcticons:syska-smart-home' })
+  },
+  // {
+  //   path: '/user',
+  //   name: '用户管理',
+  //   key: 'user',
+  //   type: 'subMenu',
+  //   icon: UserOutlined,
+  //   iconfont: 'icon-xiaoshouzongjian',
+  //   routes: [
+  //     {
+  //       path: '/user/list',
+  //       name: '用户列表',
+  //       exact: true,
+  //       key: 'user:list:view',
+  //       component: UserList
+  //     },
+  //     {
+  //       path: '/user/list/add',
+  //       name: '新增用户',
+  //       exact: true,
+  //       key: 'user:list:add',
+  //       // hideInMenu: true,
+  //       component: UserEdit
+  //     },
+  //     {
+  //       path: '/user/list/edit',
+  //       name: '编辑用户',
+  //       exact: true,
+  //       key: 'user:list:edit',
+  //       hideInMenu: true,
+  //       component: UserEdit
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/role',
+  //   name: '角色管理',
+  //   key: 'role',
+  //   type: 'subMenu',
+  //   icon: AuditOutlined,
+  //   routes: [
+  //     {
+  //       path: '/role/list',
+  //       name: '角色列表',
+  //       exact: true,
+  //       key: 'role:list:view',
+  //       component: RoleList
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/auth',
+  //   name: '权限测试页',
+  //   exact: true,
+  //   key: 'auth:test:view',
+  //   icon: BankOutlined,
+  //   component: AuthTest
+  // },
+  // {
+  //   path: '/test-api',
+  //   name: '测试api',
+  //   exact: true,
+  //   key: '/test-api',
+  //   icon: ApiOutlined,
+  //   component: TestApiLoad
+  // },
+  {
+    path: '/403',
+    name: '暂无权限',
+    exact: true,
+    key: '/403',
+    icon: InfoCircleOutlined,
+    hideInMenu: true,
+    component: ErrorPage
+  }
 ]
 
 export default preDefinedRoutes

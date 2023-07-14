@@ -31,22 +31,22 @@ const LoginForm: FC = () => {
   // 触发登录方法
   const onFinish = async (values: CommonObjectType<string>) => {
     // 开发环境 mock
-    if (process.env.NODE_ENV === 'development') {
-      const { username, password } = values
-      try {
-        const result = await session.login({ username, password })
-        dispatch(setUserInfo(result))
-        history.push('/')
-      } catch (e) {
-        const response = (e as any)?.response // Axios异常
-        message.error(
-          response
-            ? `发生错误:${response.data}`
-            : `认证服务异常,请联系管理员:${e}`
-        )
-      }
-      return
-    }
+    // if (process.env.NODE_ENV === 'development') {
+    //   const { username, password } = values
+    //   try {
+    //     const result = await session.login({ username, password })
+    //     dispatch(setUserInfo(result))
+    //     history.push('/')
+    //   } catch (e) {
+    //     const response = (e as any)?.response // Axios异常
+    //     message.error(
+    //       response
+    //         ? `发生错误:${response.data}`
+    //         : `认证服务异常,请联系管理员:${e}`
+    //     )
+    //   }
+    //   return
+    // }
     // 线上环境直接返回信息
     const result = userRes[0]
     dispatch(setUserInfo(result))
@@ -69,7 +69,7 @@ const LoginForm: FC = () => {
       <Form.Item
         name="password"
         rules={[{ required: true, message: '请输入密码' }]}
-        extra="用户名：admin 密码：123456"
+      // extra="用户名：admin 密码：123456"
       >
         <Input.Password
           placeholder="密码"
@@ -86,7 +86,7 @@ const LoginForm: FC = () => {
         >
           登录
         </Button>
-        <OidcLogin loginCallback={() => history.push('/')} />
+        {/* <OidcLogin loginCallback={() => history.push('/')} /> */}
       </Form.Item>
     </Form>
   )
@@ -102,9 +102,9 @@ const LoginForm: FC = () => {
         }}
         style={{ zIndex: 1 }}
       />
-      <div className="logo-box">
+      <div className="logo-box" style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center' }}>
         <img alt="" className="logo" src={Logo} />
-        <span className="logo-name">React-Antd Multi-Tab</span>
+        <span className="logo-name">分布式系统故障诊断系统</span>
       </div>
       {FormView}
     </div>

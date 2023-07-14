@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Upload, Button, message, List, Spin } from 'antd';
+import { Upload, Button, message, List, Spin, Card } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import Papa from 'papaparse'; // 导入 PapaParse 库
 import $axios from '@/utils/axios'
+import MyEcharts from '@/components/common/myEcharts'
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 interface MyUploadProps {
   accept?: string;
@@ -13,8 +15,30 @@ function MyUpload({ accept }: MyUploadProps) {
   const [uploadStatus, setUploadStatus] = useState<'success' | 'error' | null>(null);
   const [loading, setLoading] = useState(false);
   const [training, setTraining] = useState(false);
-  const [trainResult, setTrainResult] = useState('');
-  const [plotUrl, setPlotUrl] = useState(null);
+  const [downloadBtn, setDownloadBtn] = useState(false);
+  const [chart, setChart] = useState(false);
+  const [res, setRes] = useState([]);
+
+  const getOption2 = () => {
+    // 如果 res 的长度为 0，说明数据尚未准备好，返回一个空对象
+    if (res.length === 0) {
+      return {};
+    }
+    return {
+      legend: {},
+      tooltip: {},
+      dataset: {
+        source: [
+          ['故障', '故障#0', '故障#1', '故障#2', '故障#3', '故障#4', '故障#5'],
+          ['数量', res['typenum'][0], res['typenum'][1], res['typenum'][2],
+            res['typenum'][3], res['typenum'][4], res['typenum'][5]],
+        ]
+      },
+      xAxis: { type: 'category' },
+      yAxis: {},
+      series: [{ type: 'bar' }, { type: 'bar' }, { type: 'bar' }, { type: 'bar' }, { type: 'bar' }, { type: 'bar' }]
+    }
+  }
 
   const handleUpload = async (file: File) => {
     // 检查文件类型是否为 CSV
@@ -25,36 +49,31 @@ function MyUpload({ accept }: MyUploadProps) {
 
     try {
       setLoading(true); // 显示上传中的加载中动画
-      const { data } = await new Promise<Papa.ParseResult>((resolve, reject) => {
-        Papa.parse(file, {
-          header: true,
-          skipEmptyLines: true,
-          complete: (results) => {
-            resolve(results);
-          },
-          error: (error) => {
-            reject(error);
-          },
-        });
-      });
-      // console.log(data); // 将解析结果打印到控制台
       setUploadStatus('success'); // 标记上传成功
       setLoading(false); // 关闭上传中的加载中动画
       setTraining(true); // 显示模型训练中的加载中动画
 
+      const formData = new FormData();
+      formData.append('file', file);
+
       await $axios
-        .post('/predict/', data)
+        .post('/predict/', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
         .then((res: any) => {
-          // console.log(res);
-          setTrainResult(''); // 保存训练结果
-          message.success('模型训练完成！'); // 提示训练完成
+          res = JSON.parse(res)
+          console.log(res);
+          setRes(res);
+          // getOption2();
+          // console.log(JSON.parse(res));
+          console.log(res['typenum']);
+
+          message.success('样本预测完成！'); // 提示预测完成
           setTraining(false); // 关闭模型训练中的加载中动画
-          // TODO: 接收后端传来的图像并显示 base64
-          // 将 PNG 图像数据转换为 base64 编码的字符串
-          const binaryData = atob(res);
-          const blob = new Blob([new Uint8Array(binaryData.length).map((_, i) => binaryData.charCodeAt(i))], { type: 'image/png' });
-          const imageUrl = URL.createObjectURL(blob);
-          setPlotUrl(imageUrl);
+          setDownloadBtn(true);// 显示下载模型按钮
+          setChart(true);// 显示分类图表
         })
 
     } catch (error) {
@@ -70,8 +89,37 @@ function MyUpload({ accept }: MyUploadProps) {
   const handleFileChange = ({ fileList }: any) => {
     setFileList(fileList);
     setUploadStatus(null); // 重置上传状态
-    setTrainResult(''); // 重置训练结果
+    setDownloadBtn(false);
   };
+
+  const downloadRes = () => {
+    // 将数据转换为工作表对象
+    const dataWithHeader = res['result1'].map((value: any, index: any) => ({ index, res: value }));
+    const ws = XLSX.utils.json_to_sheet(dataWithHeader, { header: ['index', 'res'] });
+
+    // 将工作表转换为工作簿对象
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    // 将工作簿保存为二进制数据
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+    // 将二进制数据保存为文件
+    const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
+    saveAs(blob, 'res.xlsx');
+  };
+
+  // 将字符串转换为 ArrayBuffer
+  const s2ab = (s: string) => {
+    const buf = new ArrayBuffer(s.length);
+    const view = new Uint8Array(buf);
+
+    for (let i = 0; i < s.length; i++) {
+      view[i] = s.charCodeAt(i) & 0xff;
+    }
+
+    return buf;
+  }
 
   return (
     <>
@@ -102,9 +150,15 @@ function MyUpload({ accept }: MyUploadProps) {
           )}
         />
         <div>{loading && <Spin size="large" tip="文件上传中，请稍候..." />}</div>
-        <div>{training && <Spin size="large" tip="模型正在训练中，请稍候..." />}</div>
-        <div>{trainResult && <div>训练结果：{trainResult}</div>}</div>
-        <div>{plotUrl && <img src={plotUrl} alt="Training Plot" />}</div>
+        <div>{training && <Spin size="large" tip="正在预测中，请稍候..." />}</div>
+        <div>{downloadBtn && <Button onClick={downloadRes}>下载分类结果</Button>}</div>
+        <br />
+        <div>{chart && <div><Card>
+          <MyEcharts
+            option={getOption2()}
+            style={{ width: '60vw', height: '500px' }}
+          />
+        </Card></div>}</div>
       </div>
     </>
   );
